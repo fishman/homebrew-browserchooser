@@ -1,0 +1,42 @@
+name: update-formula
+
+# Keep the tap formula in sync with fishman/browserchooser releases. Runs on a
+# schedule (and manually via workflow_dispatch): if the latest release tag is
+# newer than the formula's, fetch its tarball, recompute the sha256, and commit
+# the bump back to master so the tap always builds the latest version.
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Latest upstream release tag
+        id: latest
+        run: |
+          tag=$(curl -s https://api.github.com/repos/fishman/browserchooser/releases/latest | jq -r .tag_name)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Bump formula if newer
+        env:
+          TAG: ${{ steps.latest.outputs.tag }}
+        run: |
+          cur=$(sed -n 's#.*refs/tags/\([^"]*\)\.tar\.gz.*#\1#p' Formula/browserchooser.rb)
+          if [ "$TAG" = "$cur" ]; then
+            echo "already at $TAG, nothing to do"
+            exit 0
+          fi
+          url="https://github.com/fishman/browserchooser/archive/refs/tags/${TAG}.tar.gz"
+          sha=$(curl -sL "$url" | sha256sum | awk '{print $1}')
+          sed -i "s#refs/tags/.*\.tar\.gz#refs/tags/${TAG}.tar.gz#; s#sha256 \".*\"#sha256 \"$sha\"#" Formula/browserchooser.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: bump formula to ${TAG}"
+          git push
