@@ -1,8 +1,8 @@
 class Browserchooser < Formula
   desc "Rofi-style browser picker for Linux, macOS, and Windows"
   homepage "https://github.com/fishman/browserchooser"
-  url "https://github.com/fishman/browserchooser/archive/refs/tags/v0.1.10.tar.gz"
-  sha256 "c36d8f2808837e9aea14177b79524fef572f84965c95204c92e6bd756dcd8d9a"
+  url "https://github.com/fishman/browserchooser/archive/refs/tags/v0.1.12.tar.gz"
+  sha256 "6d98a04ca5f8cfb0241afe52054e313a45f255fe5fd95a2057f532f35534e5d8"
   license "MIT"
   head "https://github.com/fishman/browserchooser.git", branch: "master"
 
