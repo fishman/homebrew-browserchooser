@@ -20,4 +20,9 @@ needed to register as the default browser and receive links. Symlink it into
 ln -s /opt/homebrew/Cellar/browserchooser/*/BrowserChooser.app ~/Applications/
 ```
 
-On Intel Homebrew (`/usr/local`), adjust the path accordingly.
+On Intel Homebrew (`/usr/local`), adjust the path accordingly. Then register it
+as the default browser so links are routed here:
+
+```sh
+browserchooser --set-default
+```
